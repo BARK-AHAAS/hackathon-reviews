@@ -1,0 +1,14 @@
+.productsMain {
+  padding: 1rem;
+}
+
+.productsList {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.product {
+  width: 25%;
+  margin: 2rem;
+  border: 1px solid black;
+}
