@@ -3,18 +3,30 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../../styles/Products.module.css";
 import Link from "next/link";
+import { requestBuilder } from "/lib/client";
+
+const buildRequest = (filter, sort) => {
+  console.log(sort);
+  if (filter) {
+    return `${requestBuilder.products.where(filter).build()}&sort=${sort}`
+  } else {
+    return `${requestBuilder.products.build()}?sort=${sort}`;
+  }
+} 
 
 export default function Products() {
   const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [sort, setSort] = useState("reviewRatingStatistics.averageRating asc");
-  const [filter, setFilter] = useState(null);
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
-      const productUrl = `${process.env.NEXT_PUBLIC_CTP_API_URL}/${process.env.NEXT_PUBLIC_CTP_PROJECT_KEY}/products?sort=${sort}`;
-      const response = await fetch(productUrl, {
+
+      const uri = `${process.env.NEXT_PUBLIC_CTP_API_URL}${buildRequest(filter, sort)}`
+      console.log(uri);
+      const response = await fetch(uri, {
         method: "get",
         headers: {
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_CT_ACCESS_TOKEN}`,
@@ -62,13 +74,14 @@ export default function Products() {
           id="filter-dropdown"
           onChange={(e) => setFilter(e.target.value)}
         >
-          <option value="5.0">Five stars only</option>
-          <option value="4.0">Four stars only</option>
+          <option value="">All</option>
+          <option value="reviewRatingStatistics(averageRating>=5)">Five stars only</option>
+          <option value="reviewRatingStatistics(averageRating>=4) and reviewRatingStatistics(averageRating<=5)">Four stars only</option>
+          <option value="reviewRatingStatistics(averageRating>=4)">Four stars and above</option>
         </select>
 
         <div className={styles.productsList}>
           {data.results.map((item) => {
-            console.log(item)
             const currentData = item.masterData.current;
             const masterImage = currentData.masterVariant.images[0];
             return (
@@ -89,7 +102,7 @@ export default function Products() {
                           Math.floor(item.reviewRatingStatistics.averageRating)
                         ).keys(),
                       ].map((i) => (
-                        <span>&#x2b50;</span>
+                        <span key={i}>&#x2b50;</span>
                       ))}
                     </h4>
                   )}
