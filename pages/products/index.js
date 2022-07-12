@@ -36,12 +36,11 @@ export default function Products() {
       setData(data);
       setLoading(false);
     };
-
+    console.log(data);
     fetchData();
   }, [sort, filter]);
 
   if (isLoading) return <p>Loading...</p>;
-  if (!data) return <p>No products</p>;
 
   return (
     <div>
@@ -75,46 +74,50 @@ export default function Products() {
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="">All</option>
+          <option value="reviewRatingStatistics(averageRating>=4)">Four stars and above</option>
           <option value="reviewRatingStatistics(averageRating>=5)">Five stars only</option>
           <option value="reviewRatingStatistics(averageRating>=4) and reviewRatingStatistics(averageRating<=5)">Four stars only</option>
-          <option value="reviewRatingStatistics(averageRating>=4)">Four stars and above</option>
+          <option value="reviewRatingStatistics(averageRating>=3) and reviewRatingStatistics(averageRating<=4)">Three stars only</option>
         </select>
 
-        <div className={styles.productsList}>
-          {data.results.map((item) => {
-            const currentData = item.masterData.current;
-            const masterImage = currentData.masterVariant.images[0];
-            return (
-              <Link key={item.id} href={`/products/${encodeURIComponent(item.id)}`}>
-                <a className={styles.product}>
-                  <Image
-                    src={masterImage.url}
-                    alt="Product"
-                    width={200}
-                    height={200}
-                  />
-                  <h3>{currentData.name["en-US"] || currentData.name["en"]}</h3>
-                  {item.reviewRatingStatistics?.averageRating && (
-                    <h4>
-                      {"Average Review: "}
-                      {[
-                        ...Array(
-                          Math.floor(item.reviewRatingStatistics.averageRating)
-                        ).keys(),
-                      ].map((i) => (
-                        <span key={i}>&#x2b50;</span>
-                      ))}
-                    </h4>
-                  )}
+        {data?.results &&
+          <div className={styles.productsList}>
+            <h5>{data.results.length} result(s)</h5>
+            {data.results.map((item) => {
+              const currentData = item.masterData.current;
+              const masterImage = currentData.masterVariant.images[0];
+              return (
+                <Link key={item.id} href={`/products/${encodeURIComponent(item.id)}`}>
+                  <a className={styles.product}>
+                    <Image
+                      src={masterImage.url}
+                      alt="Product"
+                      width={200}
+                      height={200}
+                    />
+                    <h3>{currentData.name["en-US"] || currentData.name["en"]}</h3>
+                    {item.reviewRatingStatistics?.averageRating && (
+                      <h4>
+                        {"Average Review: "}
+                        {[
+                          ...Array(
+                            Math.floor(item.reviewRatingStatistics.averageRating)
+                          ).keys(),
+                        ].map((i) => (
+                          <span key={i}>&#x2b50;</span>
+                        ))}
+                      </h4>
+                    )}
 
-                  {!item.reviewRatingStatistics?.averageRating && (
-                    <h4>No Reviews</h4>
-                  )}
-                </a>
-              </Link>
-            );
-          })}
-        </div>
+                    {!item.reviewRatingStatistics?.averageRating && (
+                      <h4>No Reviews</h4>
+                    )}
+                  </a>
+                </Link>
+              );
+            })}
+          </div>
+        }
       </main>
     </div>
   );
