@@ -82,7 +82,6 @@ export default function Products() {
 
         {data?.results &&
           <div className={styles.productsList}>
-            <h5>{data.results.length} result(s)</h5>
             {data.results.map((item) => {
               const currentData = item.masterData.current;
               const masterImage = currentData.masterVariant.images[0];
