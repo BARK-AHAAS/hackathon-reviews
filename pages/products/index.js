@@ -66,7 +66,7 @@ export default function Products() {
           </option>
         </select>
 
-        <label htmlFor="filter">Sort by:</label>
+        <label htmlFor="filter">Filter by:</label>
         <select
           name="filter"
           value={filter}
