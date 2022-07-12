@@ -69,7 +69,7 @@ export default function ProductDetails({ product_id, data, reviews }) {
           {currentData.name["en-US"] || currentData.name["en"]}
         </h1>
         <Image src={masterImage.url} alt="Product" width={200} height={200} />
-        <p>{`Reviews (${reviewRatingStatistics.count})`}</p>
+        <p>{`Reviews (${reviewRatingStatistics?.count || 0})`}</p>
         {reviews.results.map((review) => {
           return (
             <div key={review.id}>
