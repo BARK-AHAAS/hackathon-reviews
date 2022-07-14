@@ -3,8 +3,35 @@ import Link from "next/link";
 import styles from '../../styles/Home.module.css';
 import { client, requestBuilder, headers } from "/lib/client";
 
-function ReviewsToApprove(data) {
+export default function ReviewsToApprove(data) {
   const reviews = data.results.results;
+  const approveReview = (event) => {
+    client
+      .execute({
+        uri: requestBuilder.reviews.byId(`${event.target.value}`).build(),
+        method: "POST",
+        headers,
+        body: `{
+          "version": 1,
+          "actions": [
+            {
+              "action": "transitionState",
+              "state": {
+                "key": "approved"
+              }
+            }
+          ]
+        }`,
+      })
+      .then((result) => {
+        console.log({ result });
+        setReviewSubmitted(true);
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,31 +41,30 @@ function ReviewsToApprove(data) {
       </Head>
 
       <main>
-        <h1 className={styles.grid}> To Approve Reviews </h1>
+        <h1> To Approve Reviews </h1>
         <button className="px-4 h-8 uppercase font-semibold tracking-wider border-2 border-black bg-teal-400 text-black">
           <Link href={`/admin/reviews`}>All Reviews</Link>
         </button>
-        {reviews.map(review => 
-          <div key={review.id} className={styles.card}>
-            <div>Title: {review.title}</div>
-            <div>Name: {review.authorName}</div>
-            <div className={styles.description}>Review: {review.text}</div>
-            <div>Rating: {review.rating}</div>
-            <button
-                className="px-6 h-12 uppercase font-semibold tracking-wider border-2 border-black bg-teal-400 text-black"
+        <div className={styles.grid}>
+          {reviews.map(review => 
+            <div key={review.id} className={styles.card}>
+              <div>Title: {review.title}</div>
+              <div>Name: {review.authorName}</div>
+              <div className={styles.description}>Review: {review.text}</div>
+              <div>Rating: {review.rating}</div>
+              <button
+                className="px-4 h-8 uppercase font-semibold tracking-wider border-2 border-black bg-teal-400 text-black"
+                value={review.id}
                 onClick={approveReview}
               >
                 Approve
               </button>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   )
-};
-
-const approveReview = () => {
-  console.log("hello");
 };
 
 export async function getServerSideProps() {
@@ -63,5 +89,3 @@ export async function getServerSideProps() {
     props: {results}
   }
 }
-
-export default ReviewsToApprove

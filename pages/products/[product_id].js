@@ -26,10 +26,9 @@ export default function ProductDetails({ product_id, data, reviews }) {
           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0zWhwYX79rRlhq9o84wHx8JSFNaRgV0ESDw&usqp=CAU",
       },
     },
-
-    // state: {
-    //   key: "to-approve",
-    // },
+    state: {
+      key: "to-approve",
+    },
   });
 
   const submitForm = (event) => {
@@ -63,6 +62,7 @@ export default function ProductDetails({ product_id, data, reviews }) {
   };
 
   const currentData = data.masterData.current;
+  console.log(data);
   const reviewRatingStatistics = data.reviewRatingStatistics;
   const masterImage = currentData.masterVariant.images[0];
 
@@ -229,6 +229,9 @@ export async function getServerSideProps(context) {
       uri: requestBuilder.reviews
         .where(
           `target(typeId = "product" and id = "${context.params.product_id}")`
+        )
+        .where(
+          `state(id = "7ae261ee-ce3b-416c-bd0c-4b457acfc9fa")`
         )
         .build(),
       method: "GET",
