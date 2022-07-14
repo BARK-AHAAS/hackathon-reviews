@@ -16,6 +16,17 @@ export default function ProductDetails({ product_id, data, reviews }) {
       typeId: "product",
       id: product_id,
     },
+    custom: {
+      type: {
+        key: "review-imageUrl",
+        typeId: "type",
+      },
+      fields: {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0zWhwYX79rRlhq9o84wHx8JSFNaRgV0ESDw&usqp=CAU",
+      },
+    },
+
     // state: {
     //   key: "to-approve",
     // },
@@ -179,20 +190,29 @@ export default function ProductDetails({ product_id, data, reviews }) {
         </div>
         {reviews.results.map((review) => {
           return (
-            <div
-              className="relative flex flex-wrap items-baseline pb-6 pl-6 before:bg-black before:absolute before:-top-6 before:bottom-0 before:-left-60 before:-right-6"
-              key={review.id}
-            >
-              <h1 className="relative w-full flex-none mb-2 text-2xl font-semibold text-white">
-                {review.title}
-              </h1>
-              <div className="relative text-lg text-white">
-                Rating: {review.rating}
+            <div key={review.id} className="p-6 bg-black border border-sky-500">
+              <div className="relative flex flex-wrap items-baseline">
+                <h1 className="relative w-full flex-none mb-2 text-2xl font-semibold text-white">
+                  {review.title}
+                </h1>
+                <div className="relative text-lg text-white">
+                  Rating: {review.rating}
+                </div>
+                <div className="relative uppercase text-teal-400 ml-3">
+                  Author: {review.authorName}
+                </div>
+                <p className="relative text-teal-200 ml-3">{review.text}</p>
               </div>
-              <div className="relative uppercase text-teal-400 ml-3">
-                Author: {review.authorName}
-              </div>
-              <p className="relative text-teal-200 ml-3">{review.text}</p>
+
+              {review.custom && (
+                <picture className="z-10">
+                  <source
+                    srcSet={review.custom.fields.imageUrl}
+                    type="image/webp"
+                  />
+                  <img src={review.custom.fields.imageUrl} alt="Product" />
+                </picture>
+              )}
             </div>
           );
         })}
