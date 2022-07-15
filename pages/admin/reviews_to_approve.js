@@ -5,6 +5,7 @@ import { client, requestBuilder, headers } from "/lib/client";
 
 export default function ReviewsToApprove(data) {
   const reviews = data.results.results;
+
   const approveReview = (event, version, reviewId) => {
     client
       .execute({
@@ -25,7 +26,7 @@ export default function ReviewsToApprove(data) {
       })
       .then((result) => {
         console.log({ result });
-        setReviewSubmitted(true);
+        window.location.reload();
       })
       .catch((error) => {
         console.log({ error });
@@ -52,12 +53,16 @@ export default function ReviewsToApprove(data) {
               <div>Name: {review.authorName}</div>
               <div className={styles.description}>Review: {review.text}</div>
               <div>Rating: {review.rating}</div>
-              <button
-                className="px-4 h-8 uppercase font-semibold tracking-wider border-2 border-black bg-teal-400 text-black"
-                onClick={(e) => approveReview(e, review.version, review.id)}
-              >
-                Approve
-              </button>
+              {review.state.id =  "7ae261ee-ce3b-416c-bd0c-4b457acfc9fa" ? (
+                <button
+                  className="px-4 h-8 uppercase font-semibold tracking-wider border-2 border-black bg-teal-400 text-black"
+                  onClick={(e) => approveReview(e, review.version, review.id)}
+                >
+                  Approve
+                </button>
+              ) : (
+                <h1> "Approved" </h1>
+              )}
             </div>
           )}
         </div>

@@ -1,10 +1,37 @@
 import Head from 'next/head';
 import Link from "next/link";
 import styles from '../../styles/Home.module.css';
-import { headers } from "/lib/client";
+import { client, requestBuilder, headers } from "/lib/client";
 
-function Review(data) {
-  const reviews = data.results;
+export default function Review(data) {
+  const toApproveStateId = "7ae261ee-ce3b-416c-bd0c-4b457acfc9fa"
+  const reviews = data.results.results;
+  const approveReview = (event, version, reviewId) => {
+    client
+      .execute({
+        uri: requestBuilder.reviews.byId(`${reviewId}`).build(),
+        method: "POST",
+        headers,
+        body:     {
+          "version": version,
+          "actions": [
+            {
+              "action": "transitionState",
+              "state": {
+                "key": "approved"
+              }
+            }
+          ]
+        }
+      })
+      .then((result) => {
+        console.log({ result });
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -25,6 +52,16 @@ function Review(data) {
               <div>Name: {review.authorName}</div>
               <div className={styles.description}>Review: {review.text}</div>
               <div>Rating: {review.rating}</div>
+              {!!review.state && (review.state.id == toApproveStateId) ? (
+                <button
+                  className="px-4 h-8 uppercase font-semibold tracking-wider border-2 border-black bg-teal-400 text-black"
+                  onClick={(e) => approveReview(e, review.version, review.id)}
+                >
+                  Approve
+                </button>
+              ) : (
+                <h1> Approved </h1>
+              )}
             </div>
           )}
         </div>
@@ -34,17 +71,19 @@ function Review(data) {
 }
 
 export async function getServerSideProps() {
-  const reviewsUrl = `${process.env.NEXT_PUBLIC_CT_URL}reviews`;
-  const res = await fetch(reviewsUrl, {
-    method: 'get',
-    headers
+  const results = await client
+    .execute({
+    uri: requestBuilder.reviews.build(),
+    method: "GET",
+    headers,
   })
-  const data = await res.json();
-  const results = data.results;
-
+  .then((result) => {
+    return result.body;
+  })
+  .catch((error) => {
+    console.log({ error });
+  });
   return {
     props: {results}
   }
 }
-
-export default Review
