@@ -1,12 +1,10 @@
 import Head from 'next/head';
 import Link from "next/link";
 import styles from '../../styles/Home.module.css';
-import { client, requestBuilder, headers } from "/lib/client";
+import { headers } from "/lib/client";
 
 function Review(data) {
   const reviews = data.results;
-  let star = <span>&#x2b50;</span>
-  console.log(reviews)
   return (
     <div className={styles.container}>
       <Head>
@@ -42,7 +40,6 @@ export async function getServerSideProps() {
     headers
   })
   const data = await res.json();
-  console.log(data)
   const results = data.results;
 
   return {

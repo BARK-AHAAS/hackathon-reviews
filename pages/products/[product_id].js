@@ -62,7 +62,6 @@ export default function ProductDetails({ product_id, data, reviews }) {
   };
 
   const currentData = data.masterData.current;
-  console.log(data);
   const reviewRatingStatistics = data.reviewRatingStatistics;
   const masterImage = currentData.masterVariant.images[0];
 
@@ -231,7 +230,7 @@ export async function getServerSideProps(context) {
           `target(typeId = "product" and id = "${context.params.product_id}")`
         )
         .where(
-          `state(id = "7ae261ee-ce3b-416c-bd0c-4b457acfc9fa")`
+          `state(id = "fd3a8187-63f3-4545-817f-c782983bf5db")`
         )
         .build(),
       method: "GET",

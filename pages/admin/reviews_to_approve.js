@@ -5,14 +5,14 @@ import { client, requestBuilder, headers } from "/lib/client";
 
 export default function ReviewsToApprove(data) {
   const reviews = data.results.results;
-  const approveReview = (event) => {
+  const approveReview = (event, version, reviewId) => {
     client
       .execute({
-        uri: requestBuilder.reviews.byId(`${event.target.value}`).build(),
+        uri: requestBuilder.reviews.byId(`${reviewId}`).build(),
         method: "POST",
         headers,
-        body: `{
-          "version": 1,
+        body:     {
+          "version": version,
           "actions": [
             {
               "action": "transitionState",
@@ -21,7 +21,7 @@ export default function ReviewsToApprove(data) {
               }
             }
           ]
-        }`,
+        }
       })
       .then((result) => {
         console.log({ result });
@@ -54,8 +54,7 @@ export default function ReviewsToApprove(data) {
               <div>Rating: {review.rating}</div>
               <button
                 className="px-4 h-8 uppercase font-semibold tracking-wider border-2 border-black bg-teal-400 text-black"
-                value={review.id}
-                onClick={approveReview}
+                onClick={(e) => approveReview(e, review.version, review.id)}
               >
                 Approve
               </button>
@@ -68,12 +67,12 @@ export default function ReviewsToApprove(data) {
 };
 
 export async function getServerSideProps() {
-  const to_approve_id = "7ae261ee-ce3b-416c-bd0c-4b457acfc9fa"
+  const toApproveStateId = "7ae261ee-ce3b-416c-bd0c-4b457acfc9fa"
   const results = await client
   .execute({
     uri: requestBuilder.reviews
       .where(
-        `state(id = "${to_approve_id}")`
+        `state(id = "${toApproveStateId}")`
       )
       .build(),
     method: "GET",
